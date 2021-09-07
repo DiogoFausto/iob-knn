@@ -39,15 +39,6 @@ struct neighbor neighbor[K];
 //Functions
 //
 
-//square distance between 2 points a and b
-/*unsigned int sq_dist( struct datum a, struct datum b) {
-  short X = a.x-b.x;
-  unsigned int X2=X*X;
-  short Y = a.y-b.y;
-  unsigned int Y2=Y*Y;
-  return (X2 + Y2);
-  }
-*/
 //insert element in ordered array of neighbours
 void insert (struct neighbor element, unsigned int position) {
   for (int j=K-1; j>position; j--)
@@ -120,7 +111,7 @@ int main() {
 
   //start knn here
 
-  knn_init(KNN_BASE, N);
+  knn_init(KNN_BASE);
   
   for (int k=0; k<M; k++) { //for all test points
   //compute distances to dataset points

@@ -27,9 +27,7 @@ module iob_knn
    `SIGNAL(write, 1) 
    `COMB write = | wstrb;
 
-   //
-   //BLOCK 64-bit time counter & Free-running 64-bit counter with enable and soft reset capabilities
-   //
+   /******** GET DISTANCES *******/
 
    `SIGNAL_SIGNED(X1, DATA_W)
    `SIGNAL_SIGNED(X2, DATA_W)
@@ -56,39 +54,6 @@ module iob_knn
   
    assign DISTANCE_LOW = DISTANCE[DATA_W-1:0];
    assign DISTANCE_HIGH = DISTANCE[2*DATA_W-1:DATA_W];
-
-  /*
-  /*********** SORT DISTANCES ***********
-
-   `SIGNAL(mem, N_elem*2*DATA_W)
-   `SIGNAL(final_mem, N_elem*2*DATA_W)
-   `SIGNAL(actual_value, 2*DATA_W)
-   `SIGNAL(i, DATA_W)
-   `SIGNAL(position, DATA_W)
-   
-   `COMB mem = final_mem;
-   
-   initial begin
-      for(i=0; i<ADDRESS_MEM; i=i+1) begin
-	actual_value <= mem[2*DATA_W-1:0];    
-	if(DISTANCE < actual_value || actual_value == 0) begin
-	   position <= i;
-	   i <= ADDRESS_MEM;
-	end
-	 mem <= mem << 2*DATA_W;
-      end 
-   end
-
-   switch switch_values
-     (
-      .mem(final_mem),
-      .position(position),
-      .new_value(DISTANCE),
-      .clk(clk)
-      );
-   */
-
-
    
 endmodule
 
