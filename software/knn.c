@@ -7,7 +7,7 @@
 #include "printf.h" 
 
 //uncomment to use rand from C lib 
-//#define cmwc_rand rand
+#define cmwc_rand rand
 
 #ifdef DEBUG //type make DEBUG=1 to print debug info
 #define S 12  //random seed
@@ -30,31 +30,24 @@
 //
 
 //labeled dataset
-struct datum {
-  short x;
-  short y;
-  unsigned char label;
-} data[N], x[M];
+struct datum data[N], x[M];
 
 //neighbor info
-struct neighbor {
-  unsigned int idx; //index in dataset array
-  unsigned int dist; //distance to test point
-} neighbor[K];
+struct neighbor neighbor[K];
 
 //
 //Functions
 //
 
 //square distance between 2 points a and b
-unsigned int sq_dist( struct datum a, struct datum b) {
+/*unsigned int sq_dist( struct datum a, struct datum b) {
   short X = a.x-b.x;
   unsigned int X2=X*X;
   short Y = a.y-b.y;
   unsigned int Y2=Y*Y;
   return (X2 + Y2);
-}
-
+  }
+*/
 //insert element in ordered array of neighbours
 void insert (struct neighbor element, unsigned int position) {
   for (int j=K-1; j>position; j--)
@@ -70,6 +63,7 @@ int main() {
 
   unsigned long long elapsed;
   unsigned int elapsedu;
+  unsigned int d;
 
   //init uart and timer
   uart_init(UART_BASE, FREQ/BAUD);
@@ -125,6 +119,8 @@ int main() {
   //
 
   //start knn here
+
+  knn_init(KNN_BASE, N);
   
   for (int k=0; k<M; k++) { //for all test points
   //compute distances to dataset points
@@ -142,22 +138,20 @@ int main() {
 #endif
     for (int i=0; i<N; i++) { //for all dataset points
       //compute distance to x[k]
-      unsigned int d = sq_dist(x[k], data[i]);
-
-      //insert in ordered list
+      d = (unsigned int) sq_dist(x[k], data[i]); //call the new funcion in embedded/iob_knn.c
+      
+    //insert in ordered list
       for (int j=0; j<K; j++)
         if ( d < neighbor[j].dist ) {
           insert( (struct neighbor){i,d}, j);
           break;
-        }
-
+	  }
+        
 #ifdef DEBUG
       //dataset
-      printf("%d \t%d \t%d \t%d \t%d\n", i, data[i].x, data[i].y, data[i].label, d);
+      printf("%d \t%d \t%d \t%d \t%u\n", i, data[i].x, data[i].y, data[i].label, d);
 #endif
-
     }
-
     
     //classify test point
 
@@ -180,9 +174,9 @@ int main() {
     
 #ifdef DEBUG
     printf("\n\nNEIGHBORS of x[%d]=(%d, %d):\n", k, x[k].x, x[k].y);
-    printf("K \tIdx \tX \tY \tDist \t\tLabel\n");
+    printf("K \tIdx \tX \tY \tDist \tLabel\n");
     for (int j=0; j<K; j++)
-      printf("%d \t%d \t%d \t%d \t%d \t%d\n", j+1, neighbor[j].idx, data[neighbor[j].idx].x,  data[neighbor[j].idx].y, neighbor[j].dist,  data[neighbor[j].idx].label);
+      printf("%d \t%d \t%d \t%d \t%u \t%d\n", j+1, neighbor[j].idx, data[neighbor[j].idx].x,  data[neighbor[j].idx].y, neighbor[j].dist,  data[neighbor[j].idx].label);
     
     printf("\n\nCLASSIFICATION of x[%d]:\n", k);
     printf("X \tY \tLabel\n");
@@ -202,6 +196,7 @@ int main() {
   for (int l=0; l<C; l++)
     printf("%d ", votes_acc[l]);
   printf("\n");
+  uart_finish();
   
 }
 

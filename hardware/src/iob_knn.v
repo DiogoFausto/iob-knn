@@ -5,6 +5,7 @@
 
 module iob_knn 
   #(
+    parameter N_elem = 10,
     parameter ADDR_W = `KNN_ADDR_W, //NODOC Address width
     parameter DATA_W = `DATA_W, //NODOC Data word width
     parameter WDATA_W = `KNN_WDATA_W //NODOC Data word width on writes
@@ -29,24 +30,65 @@ module iob_knn
    //
    //BLOCK 64-bit time counter & Free-running 64-bit counter with enable and soft reset capabilities
    //
-   `SIGNAL_OUT(KNN_VALUE, 2*DATA_W)
-   knn_core knn0
+
+   `SIGNAL_SIGNED(X1, DATA_W)
+   `SIGNAL_SIGNED(X2, DATA_W)
+   `SIGNAL_SIGNED(Y1, DATA_W)
+   `SIGNAL_SIGNED(Y2, DATA_W)
+
+   assign X1 = COORD_XX;
+   assign X2 = COORD_DATAX; 
+   assign Y1 = COORD_XY;
+   assign Y2 = COORD_DATAY;
+   
+   `SIGNAL_OUT(DISTANCE, 2*DATA_W)
+  
+   get_sq_dist sq_dist
      (
-      .KNN_ENABLE(KNN_ENABLE),
-      .clk(clk),
-      .rst(rst_int)
+      .x1(X1),
+      .x2(X2),
+      .y1(Y1),
+      .y2(Y2),
+      .KNN_SAMPLE(KNN_SAMPLE),
+      .DISTANCE(DISTANCE),
+      .clk(clk)
       );
-   
-   
-   //ready signal   
-   `SIGNAL(ready_int, 1)
-   `REG_AR(clk, rst, 0, ready_int, valid)
+  
+   assign DISTANCE_LOW = DISTANCE[DATA_W-1:0];
+   assign DISTANCE_HIGH = DISTANCE[2*DATA_W-1:DATA_W];
 
-   `SIGNAL2OUT(ready, ready_int)
+  /*
+  /*********** SORT DISTANCES ***********
 
-   //rdata signal
-   //`COMB begin
-   //end
-      
+   `SIGNAL(mem, N_elem*2*DATA_W)
+   `SIGNAL(final_mem, N_elem*2*DATA_W)
+   `SIGNAL(actual_value, 2*DATA_W)
+   `SIGNAL(i, DATA_W)
+   `SIGNAL(position, DATA_W)
+   
+   `COMB mem = final_mem;
+   
+   initial begin
+      for(i=0; i<ADDRESS_MEM; i=i+1) begin
+	actual_value <= mem[2*DATA_W-1:0];    
+	if(DISTANCE < actual_value || actual_value == 0) begin
+	   position <= i;
+	   i <= ADDRESS_MEM;
+	end
+	 mem <= mem << 2*DATA_W;
+      end 
+   end
+
+   switch switch_values
+     (
+      .mem(final_mem),
+      .position(position),
+      .new_value(DISTANCE),
+      .clk(clk)
+      );
+   */
+
+
+   
 endmodule
 
