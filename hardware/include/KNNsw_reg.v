@@ -16,3 +16,10 @@
 //DATA TO USE IN C
 `SWREG_R(DISTANCE_HIGH, DATA_W, 0) //High part of the timer value, which has twice the width of the data word width
 `SWREG_R(DISTANCE_LOW,  DATA_W, 0) //Low part of the timer value, which has twice the width of the data word width
+`SWREG_R(DISTANCE_SORTED,  2*DATA_W, 0) //Actual distance to pass to C
+`SWREG_R(DISTANCE_IDX,  2*DATA_W, 0) //Actual INDEX to pass to C
+
+//DATA TO CHANGE ONLY IN VERILOG
+`SWREG_R(DISTANCE_INDEX, 10*DATA_W, 0) //10 sequence numbers related to the distances computed
+`SWREG_R(DISTANCE_VECTOR, 10*DATA_W, 0) //10 sequence numbers related to the distances computed
+

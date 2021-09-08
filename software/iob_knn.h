@@ -21,4 +21,4 @@ struct neighbor {
 //Functions
 void knn_init(int base_adress);
 unsigned long long sq_dist(struct datum x, struct datum data) ;
-
+void get_dist_sorted(struct neighbor* neighbor);

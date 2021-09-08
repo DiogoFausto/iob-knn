@@ -54,6 +54,39 @@ module iob_knn
   
    assign DISTANCE_LOW = DISTANCE[DATA_W-1:0];
    assign DISTANCE_HIGH = DISTANCE[2*DATA_W-1:DATA_W];
+
+  /*********** SORT DISTANCES ***********
+
+   `SIGNAL(mem, N_elem*2*DATA_W)
+   
+   `REG_E(clk, KNN_ENABLE, mem, DISTANCE_)
+   `SIGNAL(final_mem, N_elem*2*DATA_W)
+   `SIGNAL(actual_value, 2*DATA_W)
+   `SIGNAL(i, DATA_W)
+   `SIGNAL(position, DATA_W)
+   
+   `COMB mem = final_mem;
+   
+   initial begin
+      for(i=0; i<ADDRESS_MEM; i=i+1) begin
+	actual_value <= mem[2*DATA_W-1:0];    
+	if(DISTANCE < actual_value || actual_value == 0) begin
+	   position <= i;
+	   i <= ADDRESS_MEM;
+	end
+	 mem <= mem << 2*DATA_W;
+      end 
+   end
+
+   order make_sequence
+     (
+      .mem(final_mem),
+      .position(position),
+      .new_value(DISTANCE),
+      .clk(clk)
+      );
+*/
+
    
 endmodule
 

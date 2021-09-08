@@ -54,7 +54,7 @@ int main() {
 
   unsigned long long elapsed;
   unsigned int elapsedu;
-  unsigned int d;
+  unsigned int distance[];
 
   //init uart and timer
   uart_init(UART_BASE, FREQ/BAUD);
@@ -129,18 +129,22 @@ int main() {
 #endif
     for (int i=0; i<N; i++) { //for all dataset points
       //compute distance to x[k]
-      d = (unsigned int) sq_dist(x[k], data[i]); //call the new funcion in embedded/iob_knn.c
+      distance[i] = (unsigned int) sq_dist(x[k], data[i]); //call the new funcion in embedded/iob_knn.c
+    }
       
     //insert in ordered list
-      for (int j=0; j<K; j++)
+      /*for (int j=0; j<K; j++)
         if ( d < neighbor[j].dist ) {
           insert( (struct neighbor){i,d}, j);
           break;
-	  }
-        
+	  }*/
+
+    get_dist_sorted(&neighbor[0]);
+
+    for (int i=0; i<N; i++) {       
 #ifdef DEBUG
       //dataset
-      printf("%d \t%d \t%d \t%d \t%u\n", i, data[i].x, data[i].y, data[i].label, d);
+      printf("%d \t%d \t%d \t%d \t%u\n", i, data[i].x, data[i].y, data[i].label, distance[i]);
 #endif
     }
     
